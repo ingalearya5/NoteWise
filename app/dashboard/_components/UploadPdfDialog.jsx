@@ -11,23 +11,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { Loader2, Upload } from "lucide-react";
 import uuid4 from "uuid4";
 import { useUser } from "@clerk/nextjs";
+import axios from "axios";
 
 const UploadPdfDialog = ({ children }) => {
   const generateUploadUrl = useMutation(api.fileStorage.generateUploadUrl);
   const addFileEntry = useMutation(api.fileStorage.AddFileEntryToDb);
   const getFileUrl = useMutation(api.fileStorage.getFileUrl);
+  const embeddDocument = useAction(api.myActions.ingest);
 
   const { user } = useUser();
 
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState();
+  const [open, setOpen] = useState(false);
 
   const onFileSelect = (event) => {
     setFile(event.target.files[0]);
@@ -57,12 +60,29 @@ const UploadPdfDialog = ({ children }) => {
       fileUrl: fileUrl,
     });
     console.log(resp);
+
+    const ApiResp = await axios.get("/api/pdf-loader?pdfUrl=" + fileUrl);
+
+    console.log(ApiResp.data.result);
+    await embeddDocument({
+      splitText: ApiResp.data.result,
+      fileId: fileId,
+    });
+    // console.log(embeddedResult);
     setLoading(false);
+    setOpen(false);
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open}>
+      <DialogTrigger asChild>
+        <Button
+          className="w-full bg-blue-600 hover:bg-blue-700 font-medium py-2 flex items-center justify-center gap-2 shadow-sm"
+          onClick={() => setOpen(true)}
+        >
+          <span className="text-lg font-bold">+</span> Upload PDF
+        </Button>
+      </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
@@ -73,7 +93,7 @@ const UploadPdfDialog = ({ children }) => {
             Upload your PDF document for processing
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="my-4 space-y-4">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium mb-1">Select PDF</label>
@@ -89,7 +109,7 @@ const UploadPdfDialog = ({ children }) => {
               </p>
             </div>
           </div>
-          
+
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">File Name</label>
             <Input
@@ -99,19 +119,23 @@ const UploadPdfDialog = ({ children }) => {
             />
           </div>
         </div>
-        
+
         <DialogFooter className="flex justify-end gap-2 pt-2">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" className="w-24">
+            <Button type="button" variant="secondary" className="w-24" onClick={() => setOpen(false)}>
               Cancel
             </Button>
           </DialogClose>
-          <Button 
-            onClick={onUpload} 
+          <Button
+            onClick={onUpload}
             className="w-24 bg-blue-600 hover:bg-blue-700"
-            disabled={!file || loading}
+            disabled={!file || loading || !fileName}
           >
-            {loading ? <Loader2 className="animate-spin mr-1" size={16} /> : <Upload size={16} className="mr-1" />}
+            {loading ? (
+              <Loader2 className="animate-spin mr-1" size={16} />
+            ) : (
+              <Upload size={16} className="mr-1" />
+            )}
             {loading ? "Uploading" : "Upload"}
           </Button>
         </DialogFooter>
