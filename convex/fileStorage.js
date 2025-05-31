@@ -29,7 +29,7 @@ export const AddFileEntryToDb = mutation({
 
 export const getFileUrl = mutation({
   args: {
-    storageId: v.string(),
+    storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
     const url = await ctx.storage.getUrl(args.storageId);
