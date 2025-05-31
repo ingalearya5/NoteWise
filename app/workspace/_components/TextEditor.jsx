@@ -11,8 +11,18 @@ import EditorExtensions from "./EditorExtensions";
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
+import { useQueries, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useEffect } from "react";
 
-function TextEditor() {
+function TextEditor({fileId}) {
+
+  const notes = useQuery(api.notes.GetNotes, {
+    fileId: fileId, // Replace with actual fileId
+  });
+
+
+  console.log("notes", notes);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -46,6 +56,12 @@ function TextEditor() {
       },
     },
   });
+
+useEffect(()=>{
+  editor&&editor.commands.setContent(notes || "<p>Start Taking Your Notes Here...</p>");
+},[notes&&editor]);
+
+
 
   return (
     <div>
