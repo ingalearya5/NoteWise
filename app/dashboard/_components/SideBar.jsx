@@ -59,7 +59,7 @@ const SideBar = () => {
       <div className="p-4 mx-4 mb-6 bg-gray-50 rounded-lg border border-gray-100 shadow-sm">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-gray-700">Storage Usage</span>
-          <span className="text-sm font-semibold text-blue-600">2/10</span>
+          <span className="text-sm font-semibold text-blue-600"></span>
         </div>
         <Progress value={(fileList?.length/5)*100} className="h-2 bg-gray-200" />
         <div className="mt-3">

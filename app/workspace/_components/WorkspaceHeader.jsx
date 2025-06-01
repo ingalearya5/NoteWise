@@ -1,9 +1,15 @@
+
 import React from "react";
 import { FileText } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const WorkspaceHeader = ({ filename }) => {
+  const saveButtonClicked = () => {
+    toast("PDF saved successfully!");
+  }
+
   return (
     <div className="flex items-center justify-between p-4 shadow-md ">
       <h1 className="font-bold text-blue-600 flex items-center text-3xl gap-2">
@@ -12,7 +18,7 @@ const WorkspaceHeader = ({ filename }) => {
       </h1>
       <h2 className="font-bold">{filename}</h2>
       <div className="flex items-center gap-4">
-        <Button>Save</Button>
+         <Button className='cursor-pointer' onClick={saveButtonClicked}>Save</Button>
         <UserButton
           appearance={{
             elements: {
