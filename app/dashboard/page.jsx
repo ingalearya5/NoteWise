@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { File } from "lucide-react";
+import Link from "next/link";
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -18,17 +19,25 @@ const Dashboard = () => {
       <h2 className="font-medium text-3xl">WorkSpace</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
-        {fileList &&
-          fileList?.map((file, index) => (
-            <div
-              key={index}
-              className="flex  gap-4 p-5 shadow-md rounded-b-md  flex-col justify-center items-center border cursor-pointer hover:scale-105 transition-all"
-            >
-              <File width={50} height={50} className="text-blue-600" />
-              <h2 className="mt-3 font-medium text-lg ">{file?.fileName}</h2>
-              {/* <h2>{file?.createdBy}</h2> */}
-            </div>
-          ))}
+        {fileList?.length > 0
+          ? fileList?.map((file, index) => (
+            <Link key={index} href={'/workspace/' + file?.fileId}>
+              <div
+                
+                className="flex  gap-4 p-5 shadow-md rounded-b-md  flex-col justify-center items-center border cursor-pointer hover:scale-105 transition-all"
+              >
+                <File width={50} height={50} className="text-blue-600" />
+                <h2 className="mt-3 font-medium text-lg ">{file?.fileName}</h2>
+                {/* <h2>{file?.createdBy}</h2> */}
+              </div>
+              </Link>
+            ))
+          : [1, 2, 3, 4, 5, 6, , 7].map((item, index) => (
+              <div
+                key={index}
+                className="bg-slate-200  rounded-md h-[150px] animate-pulse"
+              ></div>
+            ))}
       </div>
     </div>
   );

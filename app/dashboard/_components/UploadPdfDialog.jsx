@@ -18,8 +18,9 @@ import { Loader2, Upload } from "lucide-react";
 import uuid4 from "uuid4";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
+import { toast } from "sonner";
 
-const UploadPdfDialog = ({ children }) => {
+const UploadPdfDialog = ({ children,isMaxFile }) => {
   const generateUploadUrl = useMutation(api.fileStorage.generateUploadUrl);
   const addFileEntry = useMutation(api.fileStorage.AddFileEntryToDb);
   const getFileUrl = useMutation(api.fileStorage.getFileUrl);
@@ -71,12 +72,14 @@ const UploadPdfDialog = ({ children }) => {
     // console.log(embeddedResult);
     setLoading(false);
     setOpen(false);
+    toast("PDF uploaded and processed successfully!");
   };
 
   return (
     <Dialog open={open}>
       <DialogTrigger asChild>
         <Button
+        disabled={isMaxFile}
           className="w-full bg-blue-600 hover:bg-blue-700 font-medium py-2 flex items-center justify-center gap-2 shadow-sm"
           onClick={() => setOpen(true)}
         >
@@ -122,7 +125,12 @@ const UploadPdfDialog = ({ children }) => {
 
         <DialogFooter className="flex justify-end gap-2 pt-2">
           <DialogClose asChild>
-            <Button type="button" variant="secondary" className="w-24" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="w-24"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
           </DialogClose>

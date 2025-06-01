@@ -1,10 +1,19 @@
+"use client";
+import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Layout, Shield, FileText, ChevronRight } from "lucide-react";
 import React from "react";
 import UploadPdfDialog from "./UploadPdfDialog";
+import { useUser } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
 
 const SideBar = () => {
+    const { user } = useUser();
+
+  const fileList = useQuery(api.fileStorage.GetUserFiles, {
+    userEmail: user?.primaryEmailAddress?.emailAddress,
+  });
   return (
     <div className="shadow-md h-screen bg-white flex flex-col border-r">
       {/* Logo Header */}
@@ -19,7 +28,7 @@ const SideBar = () => {
       <div className="flex-1 flex flex-col p-4">
         {/* Upload Button */}
         <div className="my-4">
-          <UploadPdfDialog>
+          <UploadPdfDialog isMaxFile={fileList?.length >= 5? true : false}>
             <Button className="w-full bg-blue-600 hover:bg-blue-700 font-medium py-2 flex items-center justify-center gap-2 shadow-sm">
               <span className="text-lg font-bold">+</span> Upload PDF
             </Button>
@@ -52,10 +61,10 @@ const SideBar = () => {
           <span className="text-sm font-medium text-gray-700">Storage Usage</span>
           <span className="text-sm font-semibold text-blue-600">2/10</span>
         </div>
-        <Progress value={20} className="h-2 bg-gray-200" />
+        <Progress value={(fileList?.length/5)*100} className="h-2 bg-gray-200" />
         <div className="mt-3">
           <p className="text-xs text-gray-500">
-            You've used 2 out of 10 uploads
+            You've used {fileList?.length} out of 5 uploads
           </p>
           <div className="mt-2 flex items-center gap-1">
             <Shield className="text-blue-600" size={14} />
