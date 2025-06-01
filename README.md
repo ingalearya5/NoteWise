@@ -40,13 +40,13 @@ A full-stack AI-powered PDF note-taking SaaS application that transforms how you
 
 | Category | Technologies |
 |----------|-------------|
-| **Frontend** | Next.js 14, React 18, TypeScript, Tailwind CSS |
+| **Frontend** | Next.js 14, React 18, Tailwind CSS |
 | **Backend** | Next.js API Routes, Convex DB |
 | **AI/ML** | LangChain, Google Gemini API |
 | **Authentication** | Clerk |
 | **Database** | Convex (Real-time) |
 | **Payments** | PayPal Integration |
-| **Deployment** | Vercel/Cloud Platform |
+| **Deployment** | Vercel|
 
 ## 🚀 Getting Started
 
