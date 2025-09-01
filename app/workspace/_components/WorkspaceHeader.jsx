@@ -6,14 +6,45 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
-const WorkspaceHeader = ({ filename }) => {
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
+
+const WorkspaceHeader = ({ filename, fileId, editorRef }) => {
   const router = useRouter();
+  const { user } = useUser();
+  
+  const SaveNotes = useMutation(api.notes.AddNotes);
+
   const goToDashboard = () => {
     redirect("/dashboard");
   }
 
-  const saveButtonClicked = () => {
-    toast("PDF saved successfully!");
+  const saveButtonClicked = async () => {
+    try {
+      if (!editorRef?.current) {
+        toast.error("Editor not ready");
+        return;
+      }
+
+      const content = editorRef.current.getContent();
+      
+      if (!content || content === "<p>Start Taking Your Notes Here...</p>") {
+        toast.error("No content to save");
+        return;
+      }
+
+      await SaveNotes({
+        fileId: fileId,
+        notes: content,
+        createdBy: user?.primaryEmailAddress?.emailAddress,
+      });
+
+      toast.success("Notes saved successfully!");
+    } catch (error) {
+      console.error("Error saving notes:", error);
+      toast.error("Failed to save notes");
+    }
   }
 
   return (

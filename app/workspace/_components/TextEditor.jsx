@@ -13,14 +13,13 @@ import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 import { useQueries, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useEffect } from "react";
+import { useEffect, forwardRef, useImperativeHandle } from "react";
 
-function TextEditor({fileId}) {
+const TextEditor = forwardRef(({fileId}, ref) => {
 
   const notes = useQuery(api.notes.GetNotes, {
     fileId: fileId, // Replace with actual fileId
   });
-
 
   console.log("notes", notes);
   const editor = useEditor({
@@ -57,20 +56,24 @@ function TextEditor({fileId}) {
     },
   });
 
-useEffect(()=>{
-  editor&&editor.commands.setContent(notes || "<p>Start Taking Your Notes Here...</p>");
-},[notes&&editor]);
+  // Expose editor methods to parent component
+  useImperativeHandle(ref, () => ({
+    getContent: () => editor?.getHTML() || "",
+    getEditor: () => editor
+  }));
 
-
+  useEffect(()=>{
+    editor&&editor.commands.setContent(notes || "<p>Start Taking Your Notes Here...</p>");
+  },[notes&&editor]);
 
   return (
     <div>
-      < EditorExtensions editor={editor} />
-      <div className="overflow-scroll h-[88vh]">
-        <EditorContent editor={editor} />
-      </div>
+      <EditorExtensions editor={editor} />
+      <EditorContent editor={editor} />
     </div>
   );
-}
+});
+
+TextEditor.displayName = 'TextEditor';
 
 export default TextEditor;

@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import WorkspaceHeader from "../_components/WorkspaceHeader";
 import PdfViewer from "../_components/PdfViewer";
 import {  useQuery } from "convex/react";
@@ -9,6 +9,7 @@ import TextEditor from "../_components/TextEditor";
 
 const Workspace = () => {
   const { fileId } = useParams();
+  const editorRef = useRef();
 
   const fileInfo  = useQuery(api.fileStorage.getFileRecord,{
     fileId: fileId,
@@ -18,16 +19,12 @@ const Workspace = () => {
     console.log("fileInfo", fileInfo)
   },[fileInfo])
 
-
-
-
-
   return (
     <div>
-      <WorkspaceHeader filename={fileInfo?.fileName} />
+      <WorkspaceHeader filename={fileInfo?.fileName} fileId={fileId} editorRef={editorRef} />
 
       <div className="grid grid-cols-2 gap-5">
-        <div><TextEditor fileId={fileId} /></div>
+        <div><TextEditor ref={editorRef} fileId={fileId} /></div>
         <div>
           <PdfViewer fileUrl={fileInfo?.fileUrl} />
         </div>
