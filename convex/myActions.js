@@ -42,7 +42,7 @@ export const search = action({
     );
 
     const resultOne = (
-      await vectorStore.similaritySearch(args.query, 1)
+      await vectorStore.similaritySearch(args.query, 2)
     ).filter(
       (item) => item.metadata.fileId === args.fileId
     );
